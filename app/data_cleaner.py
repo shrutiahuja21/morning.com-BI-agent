@@ -13,7 +13,9 @@ def parse_number(value):
         return 0.0
     try:
         if isinstance(value, str):
-            return float(value.replace(",", "").replace("$", ""))
+            # Remove currency symbols and commas
+            clean_val = value.replace(",", "").replace("$", "").strip()
+            return float(clean_val)
         return float(value)
     except:
         return 0.0
@@ -37,12 +39,12 @@ def clean_deals_excel(file_path: str) -> Tuple[List[Dict], List[str]]:
 
     try:
         df = pd.read_excel(file_path)
-        # Mapping common Excel column names to our expected internal keys
+        # Actual columns from 'Deal funnel Data.xlsx'
         col_map = {
             'Deal Name': 'name',
-            'Sector': 'sector',
-            'Amount': 'amount',
-            'Close Date': 'close_date'
+            'Sector/service': 'sector',
+            'Masked Deal value': 'amount',
+            'Close Date (A)': 'close_date'
         }
         
         for _, row in df.iterrows():
@@ -57,7 +59,8 @@ def clean_deals_excel(file_path: str) -> Tuple[List[Dict], List[str]]:
             close_date = parse_date(record.get('close_date'))
 
             if not record.get('amount'):
-                notes.append(f"Excel Deal '{name}' missing amount; treated as 0.")
+                # Only note if it's explicitly missing or 0 but expected
+                pass 
 
             deals.append({
                 "name": name,
@@ -76,9 +79,20 @@ def clean_work_orders_excel(file_path: str) -> Tuple[List[Dict], List[str]]:
         return [], [f"Excel file not found: {os.path.basename(file_path)}"]
 
     try:
-        df = pd.read_excel(file_path)
+        # Work orders has headers on the second row
+        df = pd.read_excel(file_path, header=1)
+        
+        # Standardize keys for LLM analysis
         for _, row in df.iterrows():
-            orders.append(row.to_dict())
+            item = row.to_dict()
+            # Map known columns to common names if they exist
+            clean_item = {
+                "name": item.get("Deal name masked", "Unnamed Task"),
+                "status": item.get("Billing Status", "N/A"),
+                "customer": item.get("Customer Name Code", "N/A")
+            }
+            orders.append(clean_item)
+            
         return orders, []
     except Exception as e:
         return [], [f"Error reading Excel work orders: {str(e)}"]

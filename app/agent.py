@@ -113,11 +113,18 @@ async def process_query(user_query: str, session_id: str):
     pipeline_insights = pipeline_by_sector(deals)
     avg_size = average_deal_size(deals)
     
+    # Simple status distribution for Work Orders
+    wo_status = {}
+    for wo in work_orders:
+        status = wo.get("status", "N/A")
+        wo_status[status] = wo_status.get(status, 0) + 1
+    
     analysis_results = {
         "pipeline_by_sector": pipeline_insights,
         "average_deal_size": avg_size,
         "total_deals_count": len(deals),
-        "work_orders_count": len(work_orders)
+        "work_orders_count": len(work_orders),
+        "work_order_status_distribution": wo_status
     }
 
     # 4. Final Answer Generation
