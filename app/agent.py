@@ -85,7 +85,11 @@ async def process_query(user_query: str, session_id: str):
             notes.extend(cleaning_notes)
             trace.append(f"Normalized {len(deals)} deal records")
         else:
-            notes.append("BOARD_ID_DEALS not configured.")
+            trace.append("BOARD_ID_DEALS not configured. Falling back to 'Deal funnel Data.xlsx'.")
+            from app.data_cleaner import clean_deals_excel
+            deals, excel_notes = clean_deals_excel("Deal funnel Data.xlsx")
+            notes.extend(excel_notes)
+            trace.append(f"Loaded {len(deals)} deal records from Excel.")
 
     if intent["needs_work_orders"]:
         if BOARD_ID_WORK_ORDERS:
@@ -94,7 +98,11 @@ async def process_query(user_query: str, session_id: str):
             work_orders = clean_work_orders(raw_wo)
             trace.append(f"Fetched {len(work_orders)} work order records")
         else:
-            notes.append("BOARD_ID_WORK_ORDERS not configured.")
+            trace.append("BOARD_ID_WORK_ORDERS not configured. Falling back to 'Work_Order_Tracker Data.xlsx'.")
+            from app.data_cleaner import clean_work_orders_excel
+            work_orders, excel_notes = clean_work_orders_excel("Work_Order_Tracker Data.xlsx")
+            notes.extend(excel_notes)
+            trace.append(f"Loaded {len(work_orders)} work order records from Excel.")
 
     # 3. Analytics Processing (Simple filters based on typical queries)
     # Note: In a fuller implementation, the LLM could specify parameters for filter functions.
