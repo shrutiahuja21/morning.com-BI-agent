@@ -1,27 +1,17 @@
 {
     "version": 2,
-    "builds": [
+    "rewrites": [
         {
-            "src": "app/main.py",
-            "use": "@vercel/python"
+            "source": "/query",
+            "destination": "/api/index.py"
         },
         {
-            "src": "frontend/**",
-            "use": "@vercel/static"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/query",
-            "dest": "app/main.py"
+            "source": "/health",
+            "destination": "/api/index.py"
         },
         {
-            "src": "/health",
-            "dest": "app/main.py"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "frontend/$1"
+            "source": "/(.*)",
+            "destination": "/frontend/$1"
         }
     ]
 }
