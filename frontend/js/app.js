@@ -3,7 +3,10 @@ const chatInput = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-btn');
 
 const sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
-const API_URL = '/query'; // Relative path for Vercel deployment
+// Automatically switch between local and production API URLs
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8000/query'
+    : '/query';
 
 function appendMessage(role, text, toolCalls = [], notes = []) {
     const msgDiv = document.createElement('div');
