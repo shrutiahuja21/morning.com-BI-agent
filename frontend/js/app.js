@@ -3,8 +3,10 @@ const chatInput = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-btn');
 
 const sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
-// Automatically switch between local and production API URLs
-const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+// Automatically switch between local (localhost or file://) and production API URLs
+const API_URL = window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.hostname === ''
     ? 'http://localhost:8000/query'
     : '/query';
 
