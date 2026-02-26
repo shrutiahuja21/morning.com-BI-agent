@@ -17,7 +17,9 @@ app.add_middleware(
 
 @app.post("/query")
 async def query_agent(request: QueryRequest):
+    print(f"Received query: {request.query} for session: {request.session_id}")
     result = await process_query(request.query, request.session_id)
+    print("Query processed successfully")
     return result
 
 

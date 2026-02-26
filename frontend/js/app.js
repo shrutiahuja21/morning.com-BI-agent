@@ -7,7 +7,7 @@ const sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
 const API_URL = window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1' ||
     window.location.hostname === ''
-    ? 'http://localhost:8000/query'
+    ? 'http://127.0.0.1:8000/query'
     : '/query';
 
 function appendMessage(role, text, toolCalls = [], notes = []) {
